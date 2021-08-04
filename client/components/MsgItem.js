@@ -10,10 +10,11 @@ const MsgItem = ({
   startEdit,
   onDelete,
   myId,
+  user,
 }) => (
   <li className="messages__item">
     <h3>
-      {userId}{" "}
+      {user.nickname}{" "}
       <sub>
         {new Date(timestamp).toLocaleString("ko-KR", {
           year: "numeric",
