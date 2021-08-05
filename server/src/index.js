@@ -1,30 +1,31 @@
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
-import cors from "cors";
-import messagesRoute from "./routes/messages.js";
-import usersRoute from "./routes/users.js";
-
-const app = express();
-
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-    credentials: true,
-  })
-);
+import resolvers from "./resolvers/index.js";
+import schema from "./schema/index.js";
+import { readDB } from "./dbController.js";
 
 const server = new ApolloServer({
   typeDefs: schema,
-  resovers,
+  resolvers,
   context: {
-    models: {
-      messages: "",
+    db: {
+      messages: readDB("messages"),
+      users: readDB("users"),
     },
   },
 });
 
-server.applyMiddleware({ app, path: "/graphql" });
-
-app.listen(8000, () => {
-  console.log("server listening on 8000...");
+const app = express();
+await server.start();
+server.applyMiddleware({
+  app,
+  cors: {
+    origin: ["http://localhost:3000", "https://studio.apollographql.com"],
+    credentials: true,
+  },
+  path: "/graphql",
 });
+
+app.listen({ port: 8000 });
+
+console.log("server listening on 8000...");
