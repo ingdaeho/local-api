@@ -35,6 +35,10 @@ export const CREATE_MESSAGE = gql`
       id
       text
       userId
+      user {
+        id
+        nickname
+      }
       timestamp
     }
   }
