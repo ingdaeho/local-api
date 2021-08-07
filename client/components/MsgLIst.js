@@ -3,8 +3,8 @@ import { useRouter } from "next/router";
 import MsgItem from "./MsgItem";
 import MsgInput from "./MsgInput";
 import { fetcher, QueryKeys } from "../queryClient.js";
-// import useInfiniteScroll from "../hooks/useInfiniteScroll.js";
-import { useQuery, useMutation, useQueryClient } from "react-query";
+import useInfiniteScroll from "../hooks/useInfiniteScroll.js";
+import { useInfiniteQuery, useMutation, useQueryClient } from "react-query";
 import {
   GET_MESSAGES,
   CREATE_MESSAGE,
@@ -18,31 +18,26 @@ const MsgList = ({ smsgs, users }) => {
   } = useRouter();
   const [msgs, setMsgs] = useState(smsgs);
   const [editingId, setEditingId] = useState(null);
-  // const [hasNext, setHasNext] = useState(true);
-  // const fetchMoreEl = useRef(null);
-  // const intersecting = useInfiniteScroll(fetchMoreEl);
+  const fetchMoreEl = useRef(null);
+  const intersecting = useInfiniteScroll(fetchMoreEl);
 
-  const { data, error, isError } = useQuery(QueryKeys.MESSAGES, () =>
-    fetcher(GET_MESSAGES)
+  const { data, error, isError, fetchNextPage, hasNextPage } = useInfiniteQuery(
+    QueryKeys.MESSAGES,
+    ({ pageParam = "" }) => fetcher(GET_MESSAGES, { cursor: pageParam }),
+    {
+      getNextPageParam: ({ messages }) => {
+        return messages?.[messages.length - 1]?.id;
+      },
+    }
   );
 
   useEffect(() => {
-    if (!data?.messages) return;
-    setMsgs(data.messages);
-  }, [data?.messages]);
+    if (!data?.pages) return;
+    const mergedMsgs = data.pages.flatMap((d) => d.messages);
+    setMsgs(mergedMsgs);
+  }, [data?.pages]);
 
   if (isError) return null;
-
-  const getMessages = async () => {
-    const newMsgs = await fetcher("get", "/messages", {
-      params: { cursor: msgs[msgs.length - 1]?.id || "" },
-    });
-    if (newMsgs.length === 0) {
-      setHasNext(false);
-      return;
-    }
-    setMsgs((msgs) => [...msgs, ...newMsgs]);
-  };
 
   const { mutate: onCreate } = useMutation(
     ({ text }) => fetcher(CREATE_MESSAGE, { text, userId }),
@@ -95,9 +90,9 @@ const MsgList = ({ smsgs, users }) => {
 
   const doneEdit = () => setEditingId(null);
 
-  // useEffect(() => {
-  //   if (intersecting && hasNext) getMessages();
-  // }, [intersecting]);
+  useEffect(() => {
+    if (intersecting && hasNextPage) fetchNextPage();
+  }, [intersecting, hasNextPage]);
 
   return (
     <>
@@ -116,7 +111,7 @@ const MsgList = ({ smsgs, users }) => {
           />
         ))}
       </ul>
-      {/* <div ref={fetchMoreEl}></div> */}
+      <div ref={fetchMoreEl}></div>
     </>
   );
 };
