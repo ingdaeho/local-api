@@ -12,7 +12,7 @@ context: 로그인한 사용자. DB Access 등의 중요한 정보들
 const messageResolver = {
   Query: {
     messages: (parent, { cursor = "" }, { db }) => {
-      const fromIndex = db.messages.findIndex((msg) => msg.id === +cursor) + 1;
+      const fromIndex = db.messages.findIndex((msg) => msg.id === cursor) + 1;
       return db.messages?.slice(fromIndex, fromIndex + 15) || [];
     },
     message: (parent, { id = "" }, { db }) => {
@@ -52,6 +52,9 @@ const messageResolver = {
       setMsgs(db.messages);
       return id;
     },
+  },
+  Message: {
+    user: (msg, args, { db }) => db.users[msg.userId],
   },
 };
 
