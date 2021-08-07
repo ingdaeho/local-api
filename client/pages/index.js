@@ -1,5 +1,7 @@
 import MsgList from "../components/MsgLIst";
-import fetcher from "../fetcher.js";
+import { fetcher } from "../queryClient.js";
+import { GET_MESSAGES } from "../graphql/message.js";
+import { GET_USERS } from "../graphql/user";
 
 const Home = ({ smsgs, users }) => {
   return (
@@ -11,8 +13,9 @@ const Home = ({ smsgs, users }) => {
 };
 
 export const getServerSideProps = async () => {
-  const smsgs = await fetcher("get", "/messages");
-  const users = await fetcher("get", "/users");
+  const { messages: smsgs } = await fetcher(GET_MESSAGES);
+  const { users } = await fetcher(GET_USERS);
+
   return {
     props: { smsgs, users },
   };
