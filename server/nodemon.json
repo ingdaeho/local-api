@@ -1,6 +1,6 @@
 {
   "watch": ["src"],
-  "ignore": ["db.json"],
+  "ignore": ["db/**/*"],
   "env": {
     "NODE_ENV": "development"
   }

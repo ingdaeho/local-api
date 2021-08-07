@@ -1,4 +1,5 @@
-import MsgInput from "./MsgInput";
+import { TMutate, IUser } from '../types'
+import MsgInput from './MsgInput'
 
 const MsgItem = ({
   id,
@@ -10,17 +11,27 @@ const MsgItem = ({
   startEdit,
   myId,
   user,
+}: {
+  id: string
+  timestamp: number
+  text: string
+  myId: string
+  user: IUser
+  isEditing: boolean
+  onUpdate: TMutate
+  startEdit: () => void
+  onDelete: () => void
 }) => (
   <li className="messages__item">
     <h3>
-      {user.nickname}{" "}
+      {user.nickname}{' '}
       <sub>
-        {new Date(timestamp).toLocaleString("ko-KR", {
-          year: "numeric",
-          month: "numeric",
-          day: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
+        {new Date(timestamp).toLocaleString('ko-KR', {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
           hour12: true,
         })}
       </sub>
@@ -41,6 +52,6 @@ const MsgItem = ({
       </div>
     )}
   </li>
-);
+)
 
-export default MsgItem;
+export default MsgItem

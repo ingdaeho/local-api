@@ -1,4 +1,4 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag'
 
 export const GET_USERS = gql`
   query GET_USERS {
@@ -7,7 +7,7 @@ export const GET_USERS = gql`
       nickname
     }
   }
-`;
+`
 
 export const GET_USER = gql`
   query GET_USER($id: ID!) {
@@ -16,4 +16,4 @@ export const GET_USER = gql`
       nickname
     }
   }
-`;
+`

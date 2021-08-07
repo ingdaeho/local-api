@@ -1,4 +1,4 @@
-import { gql } from "apollo-server-express";
+import { gql } from 'apollo-server-express'
 
 const userSchema = gql`
   type User {
@@ -10,6 +10,6 @@ const userSchema = gql`
     users: [User!]!
     user(id: ID!): User
   }
-`;
+`
 
-export default userSchema;
+export default userSchema
